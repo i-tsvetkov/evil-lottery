@@ -16,15 +16,30 @@ def load_combinations(file)
   return combinations
 end
 
-# NOTE: the price is calculated a little bit higher than the real price
-#       but this does not make a difference to the algorithm
+def choose(n, k)
+  ((n - k + 1) .. n).reduce(:*) / (2 .. k).reduce(:*)
+end
+
 def ticket_price(ticket, combinations)
   price = 0
+  combs = {}
   WIN_COMB_SIZE.each do |k|
+    combs[k] = 0
     ticket.sort.combination(k).each do |c|
-      price += combinations.key?(c) ? WIN_COMB_PRICE[c.size] * combinations[c] : 0
+      combs[k] += combinations.key?(c) ? combinations[c] : 0
     end
   end
+
+  combs.keys.sort.reverse.each do |k_one|
+    combs.keys.select{ |k| k < k_one }.sort.reverse.each do |k_two|
+      combs[k_two] -= combs[k_one] * choose(k_one, k_two)
+    end
+  end
+
+  combs.each do |k, v|
+    price += v * WIN_COMB_PRICE[k]
+  end
+
   return price
 end
 
