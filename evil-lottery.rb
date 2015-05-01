@@ -62,6 +62,12 @@ def find_evil_combination(combinations, try_limit = 10000, acceptable_price = 0)
   return nil
 end
 
+def get_all_evil_combinations(combinations)
+  COMB_NUMBERS.combination(COMB_SIZE).map do |c|
+    { price: ticket_price(c, combinations), combination: c }
+  end.sort_by{ |c| c[:price] }
+end
+
 def get_random_tickets(number)
   (1 .. number).map{ COMB_NUMBERS.sample(COMB_SIZE) }
 end
