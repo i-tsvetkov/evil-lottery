@@ -35,4 +35,5 @@ find_evil_combination(combinations, try_limit = 10000, acceptable_price = 0)
 ### TODO
 * Създаване на клас вместо използване на константи
 * Преименуване на някои неща
+* Търсене на комбинациите в паралел чрез JRuby или Rubinius?
 
