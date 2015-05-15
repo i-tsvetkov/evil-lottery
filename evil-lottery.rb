@@ -6,6 +6,7 @@ COMB_SIZE      = 6
 def load_combinations(file)
   combinations = {}
   tickets = File.readlines(file).map(&:strip).map{ |l| l.split("\s").map(&:to_i).sort }
+  combinations[:maximum_price] = tickets.size * WIN_COMB_PRICE.values.max
   tickets.each do |t|
     WIN_COMB_SIZE.each do |k|
       t.combination(k).each do |c|
@@ -44,7 +45,7 @@ def ticket_price(ticket, combinations)
 end
 
 def get_evil_combination(combinations, acceptable_price = 0)
-  minimum_price, ticket = 999_999_999_999, nil
+  minimum_price, ticket = combinations[:maximum_price], nil
   COMB_NUMBERS.shuffle.combination(COMB_SIZE).each do |c|
     price = ticket_price(c, combinations)
     minimum_price, ticket = price, c if price < minimum_price
