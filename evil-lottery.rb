@@ -8,7 +8,6 @@ class EvilLottery
   def load_combinations(file)
     @combinations = {}
     tickets = File.readlines(file).map(&:strip).map{ |l| l.split("\s").map(&:to_i).sort }
-    @combinations[:maximum_price] = tickets.size * @win_comb_price.values.max
     tickets.each do |t|
       @win_comb_price.keys.each do |k|
         t.combination(k).each do |c|
@@ -26,16 +25,19 @@ class EvilLottery
   def ticket_price(ticket)
     price = 0
     combs = {}
+    ticket = ticket.sort
     @win_comb_price.keys.each do |k|
       combs[k] = 0
-      ticket.sort.combination(k).each do |c|
+      ticket.combination(k).each do |c|
         combs[k] += @combinations.key?(c) ? @combinations[c] : 0
       end
     end
 
-    combs.keys.sort.reverse.each do |k_one|
-      combs.keys.select{ |k| k < k_one }.sort.reverse.each do |k_two|
-        combs[k_two] -= combs[k_one] * choose(k_one, k_two)
+    ks = combs.keys.sort.reverse
+    n = ks.size - 1
+    0.upto(n).each do |i|
+      (i + 1).upto(n).each do |j|
+        combs[ks[j]] -= combs[ks[i]] * choose(ks[i], ks[j])
       end
     end
 
@@ -47,7 +49,7 @@ class EvilLottery
   end
 
   def get_evil_combination(acceptable_price = 0)
-    minimum_price, ticket = @combinations[:maximum_price], nil
+    minimum_price, ticket = Float::INFINITY, nil
     @comb_numbers.shuffle.combination(@comb_size).each do |c|
       price = ticket_price(c)
       minimum_price, ticket = price, c if price < minimum_price
