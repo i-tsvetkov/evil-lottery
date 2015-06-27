@@ -40,6 +40,9 @@ EvilLottery.get_evil_combination(acceptable_price = 0)
 EvilLottery.find_evil_combination(try_limit = 10000, acceptable_price = 0)
 ```
 
-### TODO
-* Търсене на комбинациите в паралел чрез JRuby или Rubinius?
+### ParallelEvilLottery
+* Клас за търсене на комбинациите в паралел чрез JRuby или Rubinius
+* Неблокиращо търсене (lock-free)
+* *Може* да използва доста памет
+* Използва същото API
 
