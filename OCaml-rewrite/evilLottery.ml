@@ -11,13 +11,17 @@ let product lst = List.fold_left ( * ) 1 lst;;
 
 let choose n k = (product @@ range (n - k + 1) n) / (product @@ range 1 k);;
 
-(* http://rosettacode.org/wiki/Combinations#OCaml *)
+(* https://ocaml.org/learn/tutorials/99problems.html#Workingwithlists *)
 let rec combinations k lst =
-  match k, lst with
-  | 0, _      -> [[]]
-  | _, []     -> []
-  | k, h :: t -> List.map (fun x -> h :: x) (combinations (k - 1) t)
-                 @ combinations k t;;
+  let rec aux k acc emit = function
+    | [] -> acc
+    | h :: t ->
+      if k = 1 then aux k (emit [h] acc) emit t else
+        let new_emit x = emit (h :: x) in
+        aux k (aux (k-1) acc new_emit t) emit t
+  in
+  let emit x acc = x :: acc in
+  aux k [] emit lst;;
 
 let print_ticket ticket = List.iter (printf "%3d") ticket;;
 
