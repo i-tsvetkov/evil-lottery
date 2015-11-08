@@ -12,7 +12,7 @@ let product lst = List.fold_left ( * ) 1 lst;;
 let choose n k = (product @@ range (n - k + 1) n) / (product @@ range 1 k);;
 
 (* https://ocaml.org/learn/tutorials/99problems.html#Workingwithlists *)
-let rec combinations k lst =
+let combinations k lst =
   let rec aux k acc emit = function
     | [] -> acc
     | h :: t ->
