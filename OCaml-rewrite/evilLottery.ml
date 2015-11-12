@@ -66,10 +66,11 @@ let rec get_comb_id cb =
 let load_combinations filename =
   let combs = Hashtbl.create 0 in
   let add_comb c =
-    (if Hashtbl.mem combs @@ get_comb_id c then
-      succ @@ Hashtbl.find combs @@ get_comb_id c
+    let comb_id = get_comb_id c in
+    (if Hashtbl.mem combs comb_id then
+      succ @@ Hashtbl.find combs comb_id
     else 1)
-    |> Hashtbl.replace combs @@ get_comb_id c in
+    |> Hashtbl.replace combs comb_id in
   let add_ticket t =
     List.iter (fun k ->
       List.iter add_comb (combinations k t)) win_ks in
@@ -81,8 +82,9 @@ let played_comb = load_combinations Sys.argv.(1);;
 
 let ticket_price ticket =
   let get_comb_val c =
-    if Hashtbl.mem played_comb @@ get_comb_id c then
-      Hashtbl.find played_comb @@ get_comb_id c
+    let comb_id = get_comb_id c in
+    if Hashtbl.mem played_comb comb_id then
+      Hashtbl.find played_comb comb_id
     else 0 in
   let rec rm_dup_wins lst =
     match lst with
