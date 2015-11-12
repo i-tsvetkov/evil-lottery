@@ -11,6 +11,8 @@ let product lst = List.fold_left ( * ) 1 lst;;
 
 let choose n k = (product @@ range (n - k + 1) n) / (product @@ range 1 k);;
 
+let sort lst = List.sort compare lst;;
+
 (* https://ocaml.org/learn/tutorials/99problems.html#Workingwithlists *)
 let combinations k lst =
   let rec aux k acc emit = function
@@ -40,7 +42,7 @@ let parse_ticket ticket =
   let split = Str.split @@ Str.regexp " +" in
   split ticket
   |> List.map int_of_string
-  |> List.sort compare;;
+  |> sort;;
 
 let get_tickets filename =
   readlines filename
@@ -49,7 +51,7 @@ let get_tickets filename =
 let klass = 6;;
 let numbers = range 1 49;;
 let ks_prices = [(3, 10); (4, 100); (5, 100_000); (6, 1_000_000)];;
-let win_ks = List.rev @@ List.map fst ks_prices;;
+let win_ks = List.rev @@ sort @@ List.map fst ks_prices;;
 
 let load_combinations filename =
   let combs = Hashtbl.create 0 in
@@ -87,7 +89,7 @@ let ticket_price ticket =
 
 combinations klass numbers
 |> List.map (fun t -> (ticket_price t, t))
-|> List.sort compare
+|> sort
 |> List.iter (fun (p, t) -> print_ticket t;
                             print_string " = ";
                             print_int p;
