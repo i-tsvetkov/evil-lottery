@@ -49,17 +49,27 @@ let get_tickets filename =
   |> List.map parse_ticket;;
 
 let klass = 6;;
-let numbers = range 1 49;;
+let end_number = 49;;
+let numbers = range 1 end_number;;
 let ks_prices = [(3, 10); (4, 100); (5, 100_000); (6, 1_000_000)];;
 let win_ks = List.rev @@ sort @@ List.map fst ks_prices;;
+
+let rec get_comb_id cb =
+  let rec pow m n =
+    if n = 0 then 1
+    else m * pow m (n - 1) in
+  match cb with
+  | [] -> 0
+  | h :: t -> h * pow end_number ((List.length cb) - 1)
+              + get_comb_id t;;
 
 let load_combinations filename =
   let combs = Hashtbl.create 0 in
   let add_comb c =
-    (if Hashtbl.mem combs c then
-      succ @@ Hashtbl.find combs c
+    (if Hashtbl.mem combs @@ get_comb_id c then
+      succ @@ Hashtbl.find combs @@ get_comb_id c
     else 1)
-    |> Hashtbl.replace combs c in
+    |> Hashtbl.replace combs @@ get_comb_id c in
   let add_ticket t =
     List.iter (fun k ->
       List.iter add_comb (combinations k t)) win_ks in
@@ -71,8 +81,8 @@ let played_comb = load_combinations Sys.argv.(1);;
 
 let ticket_price ticket =
   let get_comb_val c =
-    if Hashtbl.mem played_comb c then
-      Hashtbl.find played_comb c
+    if Hashtbl.mem played_comb @@ get_comb_id c then
+      Hashtbl.find played_comb @@ get_comb_id c
     else 0 in
   let rec rm_dup_wins lst =
     match lst with
