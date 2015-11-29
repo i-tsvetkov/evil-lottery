@@ -54,6 +54,13 @@ let numbers = range 1 end_number;;
 let ks_prices = [(3, 10); (4, 100); (5, 100_000); (6, 1_000_000)];;
 let win_ks = List.rev @@ sort @@ List.map fst ks_prices;;
 
+(* NOTE: does not guarantee uniqueness e.g.
+          [0] = [0; 0; 0] = [0; 0; 0; 0] = []
+         the order of the elements matters e.g.
+          [1; 2; 3; 4] <> [4; 3; 2; 1]
+         generation of IDs is based on
+          https://en.wikipedia.org/wiki/Positional_notation
+*)
 let rec get_comb_id cb =
   let rec pow m n =
     if n = 0 then 1
