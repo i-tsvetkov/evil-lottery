@@ -106,11 +106,61 @@ let ticket_price ticket =
   |> rm_dup_wins
   |> price;;
 
-combinations klass numbers
-|> List.map (fun t -> (ticket_price t, t))
-|> sort
-|> List.iter (fun (p, t) -> print_ticket t;
-                            print_string " = ";
-                            print_int p;
-                            print_newline ());;
+let get_write_comb basename_fmt limit =
+  let i = ref 0 in
+  let n = ref 1 in
+  let filename = ref (sprintf basename_fmt !n) in
+  let out_ch = ref (open_out !filename) in
+  let write_comb comb_str =
+    let write_it =
+      output_string !out_ch comb_str;
+      flush !out_ch;
+      i := !i + 1 in
+    if !i >= limit then begin
+      close_out !out_ch;
+      n := !n + 1;
+      i := 0;
+      filename := sprintf basename_fmt !n;
+      out_ch := open_out !filename;
+      write_it
+    end
+    else write_it in
+    write_comb;;
+
+let comb_to_string comb =
+  String.concat " " @@ List.map string_of_int comb;;
+
+let write_combinations k lst write_fun =
+  let rec cb k lst c =
+    if k > (List.length lst) then ()
+    else
+      match k, lst with
+      | 1, _ -> List.iter (fun e -> write_fun (e :: c)) lst
+      | _, h :: t -> cb (k - 1) t (h :: c);
+                     cb k t c in
+  cb k lst [];;
+
+let test_one () =
+  combinations klass numbers
+  |> List.map (fun t -> (ticket_price t, t))
+  |> sort
+  |> List.iter (fun (p, t) -> print_ticket t;
+                              print_string " = ";
+                              print_int p;
+                              print_newline ());;
+
+let test_two () =
+  let write_comb = get_write_comb "combs_%d.txt" 998844 in
+  write_combinations klass numbers (fun x -> write_comb @@ (comb_to_string x) ^ "\n");;
+
+let test_three () =
+  range 1 14
+  |> List.map (sprintf "combs_%d.txt")
+  |> List.iter (fun file ->
+    get_tickets file
+    |> List.iter (fun t ->
+      print_int @@ ticket_price t;
+      print_string " :";
+      print_ticket t;
+      print_newline ()));;
 
