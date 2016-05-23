@@ -6,12 +6,12 @@ class EvilLottery
   end
 
   def load_combinations(file)
-    @combinations = {}
+    @combinations = Hash.new(0)
     tickets = File.readlines(file).map(&:strip).map{ |l| l.split("\s").map(&:to_i).sort }
     tickets.each do |t|
       @win_comb_price.keys.each do |k|
         t.combination(k).each do |c|
-          @combinations[c] = @combinations.key?(c) ? @combinations[c] + 1 : 1
+          @combinations[c] += 1
         end
       end
     end
@@ -19,17 +19,17 @@ class EvilLottery
   end
 
   def choose(n, k)
-    ((n - k + 1) .. n).reduce(:*) / (2 .. k).reduce(:*)
+    ((n - k + 1) .. n).reduce(&:*) / (2 .. k).reduce(&:*)
   end
 
   def ticket_price(ticket)
     price = 0
-    combs = {}
+    combs = Hash.new(0)
     ticket = ticket.sort
     @win_comb_price.keys.each do |k|
       combs[k] = 0
       ticket.combination(k).each do |c|
-        combs[k] += @combinations.key?(c) ? @combinations[c] : 0
+        combs[k] += @combinations[c]
       end
     end
 

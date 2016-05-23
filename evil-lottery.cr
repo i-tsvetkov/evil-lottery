@@ -1,6 +1,6 @@
 class EvilLottery
   def initialize(@comb_size, @comb_numbers, @win_comb_price)
-    @combinations = {} of Array(Int32) => Int32
+    @combinations = Hash(Array(Int32), Int32).new(0)
   end
 
   def load_combinations(file)
@@ -8,7 +8,7 @@ class EvilLottery
     tickets.each do |t|
       @win_comb_price.keys.each do |k|
         t.combinations(k).each do |c|
-          @combinations[c] = @combinations.has_key?(c) ? @combinations[c] + 1 : 1
+          @combinations[c] += 1
         end
       end
     end
@@ -22,12 +22,12 @@ class EvilLottery
 
   def ticket_price(ticket)
     price = 0
-    combs = {} of Int32 => Int32
+    combs = Hash(Int32, Int32).new(0)
     ticket = ticket.sort
     @win_comb_price.keys.each do |k|
       combs[k] = 0
       ticket.combinations(k).each do |c|
-        combs[k] += @combinations.has_key?(c) ? @combinations[c] : 0
+        combs[k] += @combinations[c]
       end
     end
 
