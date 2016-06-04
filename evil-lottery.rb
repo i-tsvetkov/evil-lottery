@@ -3,6 +3,12 @@ class EvilLottery
     @comb_size      = comb_size
     @comb_numbers   = comb_numbers
     @win_comb_price = win_comb_price
+    @ks = @win_comb_price.keys.sort.reverse
+    @n = @ks.size - 1
+    @choose = {}
+    @ks.combination(2).each do |c|
+      @choose[c] = choose(*c)
+    end
   end
 
   def load_combinations(file)
@@ -25,19 +31,16 @@ class EvilLottery
   def ticket_price(ticket)
     price = 0
     combs = Hash.new(0)
-    ticket = ticket.sort
+    ticket.sort!
     @win_comb_price.keys.each do |k|
-      combs[k] = 0
       ticket.combination(k).each do |c|
         combs[k] += @combinations[c]
       end
     end
 
-    ks = combs.keys.sort.reverse
-    n = ks.size - 1
-    0.upto(n).each do |i|
-      (i + 1).upto(n).each do |j|
-        combs[ks[j]] -= combs[ks[i]] * choose(ks[i], ks[j])
+    0.upto(@n).each do |i|
+      (i + 1).upto(@n).each do |j|
+        combs[@ks[j]] -= combs[@ks[i]] * @choose[[@ks[i], @ks[j]]]
       end
     end
 
