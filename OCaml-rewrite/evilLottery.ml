@@ -13,6 +13,18 @@ let choose n k = (product @@ range (n - k + 1) n) / (product @@ range 1 k);;
 
 let sort lst = List.sort compare lst;;
 
+let rec next max_n comb =
+  match comb with
+  | []  -> []
+  | [x] -> if x >= max_n then [x] else [x + 1]
+  | x :: xs ->
+      if x >= max_n then
+        let t = next (x - 1) xs in
+        let h = List.hd t in
+        h + 1 :: t
+      else
+        x + 1 :: xs
+
 (* https://ocaml.org/learn/tutorials/99problems.html#Workingwithlists *)
 let combinations k lst =
   let rec aux k acc emit = function
@@ -140,6 +152,18 @@ let write_combinations k lst write_fun =
                      cb k t c in
   cb k lst [];;
 
+let rec next_evil max_n comb next_comb n =
+  match n with
+  | 1 -> comb
+  | _ ->
+      let next' = next max_n next_comb in
+      let next_price = ticket_price @@ List.rev next' in
+      let comb_price = ticket_price @@ List.rev comb  in
+      if next_price < comb_price then
+        next_evil max_n next' next' (n - 1)
+      else
+        next_evil max_n comb  next' (n - 1)
+
 let test_one () =
   combinations klass numbers
   |> List.map (fun t -> (ticket_price t, t))
@@ -164,3 +188,7 @@ let test_three () =
       print_ticket t;
       print_newline ()));;
 
+let test_four () =
+  next_evil 49 [6; 5; 4; 3; 2; 1] [6; 5; 4; 3; 2; 1] (13983816 - 1)
+    |> print_ticket
+;;
