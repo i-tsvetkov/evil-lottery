@@ -13,6 +13,11 @@ let choose n k = (product @@ range (n - k + 1) n) / (product @@ range 1 k);;
 
 let sort lst = List.sort compare lst;;
 
+(* https://en.m.wikipedia.org/wiki/Combinatorial_number_system *)
+let get_combination_index combination =
+  List.mapi (fun i c -> choose (c - 1) (i + 1)) combination
+  |> sum
+
 let rec next max_n comb =
   match comb with
   | []  -> []
