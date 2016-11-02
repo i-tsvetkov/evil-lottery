@@ -18,6 +18,20 @@ let get_combination_index combination =
   List.mapi (fun i c -> choose (c - 1) (i + 1)) combination
   |> sum
 
+let combination_of_index n k index =
+  let rec n2comb cb i sum k' =
+    if k' = 0 || i > n then
+      cb
+    else begin
+      let new_sum = sum + choose (n - i) (k' - 1) in
+      if index <= new_sum then
+        n2comb (i :: cb) (i + 1) sum (k' - 1)
+      else
+        n2comb cb (i + 1) new_sum k'
+    end
+  in
+  n2comb [] 1 0 k
+
 let rec next max_n comb =
   match comb with
   | []  -> []
